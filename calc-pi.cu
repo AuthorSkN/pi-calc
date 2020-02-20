@@ -11,18 +11,18 @@
 
 
 __global__ void gpuPiCalculate(float *estimate, curandState *states) {
-	unsigned int tid = threadIdx.x + blockDim.x * blockIdx.x;
+	unsigned long id = threadIdx.x + blockDim.x * blockIdx.x;
 	int pointsInCircle = 0;
 	float x, y;
 
-	curand_init(5, tid, 0, &states[tid]);  //initialize curand
+	curand_init(id, id, 0, &states[id]);  //initialize curand
 
 	for (int i = 0; i < TRIALS_PER_THREAD; i++) {
-		x = curand_uniform(&states[tid]);
-		y = curand_uniform(&states[tid]);
+		x = curand_uniform(&states[id]);
+		y = curand_uniform(&states[id]);
 		pointsInCircle += (x*x + y * y <= 1.0f); 
 	}
-	estimate[tid] = 4.0f * pointsInCircle / (float)TRIALS_PER_THREAD;
+	estimate[id] = 4.0f * pointsInCircle / (float)TRIALS_PER_THREAD;
 }
 
 float cpuPiCalculate(long trials) {
